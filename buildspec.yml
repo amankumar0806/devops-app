@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies...
+
+  pre_build:
+    commands:
+      - echo Logging in to DockerHub...
+      - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t $DOCKER_USER/devops-app:latest .
+
+  post_build:
+    commands:
+      - echo Pushing Docker image...
+      - docker push $DOCKER_USER/devops-app:latest
+
+      - echo Deploying to EC2 via SSH...
+      - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "
+          kubectl set image deployment/devops-app devops-app=$DOCKER_USER/devops-app:latest
+        "
