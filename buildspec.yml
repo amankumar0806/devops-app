@@ -21,10 +21,15 @@ phases:
     commands:
       - docker build -t $DOCKER_USER/devops-app:latest .
 
+      - IMAGE_TAG=$(date +%s)
+      - docker build -t $DOCKER_USER/devops-app:$IMAGE_TAG .
+      - docker tag $DOCKER_USER/devops-app:$IMAGE_TAG $DOCKER_USER/devops-app:latest
+
   post_build:
     commands:
       - docker push $DOCKER_USER/devops-app:latest
+      - docker push $DOCKER_USER/devops-app:$IMAGE_TAG
 
       - echo Deploying...
-      - 'ssh -i key.pem -o StrictHostKeyChecking=no ec2-user@$EC2_IP "kubectl set image deployment/devops-app devops-app=$DOCKER_USER/devops-app:latest"'
+      - 'ssh -i key.pem -o StrictHostKeyChecking=no ec2-user@$EC2_IP "kubectl set image deployment/devops-app devops-app=$DOCKER_USER/devops-app:$IMAGE_TAG"'
 
