@@ -26,6 +26,5 @@ phases:
       - docker push $DOCKER_USER/devops-app:latest
 
       - echo Deploying...
-      - ssh -i key.pem -o StrictHostKeyChecking=no ec2-user@$EC2_IP "
-          kubectl set image deployment/devops-app devops-app=$DOCKER_USER/devops-app:latest
-        "
+      - ssh -i key.pem -o StrictHostKeyChecking=no ec2-user@$EC2_IP "kubectl set image deployment/devops-app devops-app=$DOCKER_USER/devops-app:latest"
+
