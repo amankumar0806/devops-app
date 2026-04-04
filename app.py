@@ -7,7 +7,7 @@ metrics = PrometheusMetrics(app, path="/metrics")
 
 @app.route("/")
 def home():
-    return "Welcome toCICD pipeline on AWS"
+    return "Welcome toCICD pipeline on AWS with codepipline trigger"
 
 @app.route("/health")
 def health():
