@@ -7,12 +7,6 @@ phases:
 
   pre_build:
     commands:
-      - echo Setting up SSH key...
-      - echo "$EC2_SSH_KEY" | sed 's/\\n/\n/g' > key.pem
-      - chmod 400 key.pem
-
-      - echo printing SSH key...
-      - cat key.pem
 
       - echo Logging in to DockerHub...
       - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
@@ -25,11 +19,17 @@ phases:
       - docker build -t $DOCKER_USER/devops-app:$IMAGE_TAG .
       - docker tag $DOCKER_USER/devops-app:$IMAGE_TAG $DOCKER_USER/devops-app:latest
 
+
   post_build:
     commands:
       - docker push $DOCKER_USER/devops-app:latest
       - docker push $DOCKER_USER/devops-app:$IMAGE_TAG
+      
+      - echo Updating kubeconfig...
+      - aws eks update-kubeconfig --region us-east-1 --name devops-eks
 
-      - echo Deploying...
-      - 'ssh -i key.pem -o StrictHostKeyChecking=no ec2-user@$EC2_IP "kubectl set image deployment/devops-app devops-app=$DOCKER_USER/devops-app:$IMAGE_TAG"'
+      - echo Deploying to EKS...
+      - kubectl set image deployment/devops-app devops-app=$DOCKER_USER/devops-app:$IMAGE_TAG
+
+
 
