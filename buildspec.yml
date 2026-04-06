@@ -28,8 +28,16 @@ phases:
       - echo Updating kubeconfig...
       - aws eks update-kubeconfig --region us-east-1 --name devops-eks
 
+      - echo Scaling down old pods...
+      - kubectl scale deployment devops-app --replicas=0
+
+
+
       - echo Deploying to EKS...
       - kubectl set image deployment/devops-app devops-app=$DOCKER_USER/devops-app:$IMAGE_TAG
+
+      - echo Scaling up...
+      - kubectl scale deployment devops-app --replicas=1
 
 
 
