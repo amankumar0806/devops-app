@@ -7,7 +7,7 @@ metrics = PrometheusMetrics(app, path="/metrics")
 
 @app.route("/")
 def home():
-    return "Welcome to deployment on EKS on pipeline"
+    return "Welcome to deployment on EKS on pipeline for AWS"
 
 @app.route("/health")
 def health():
